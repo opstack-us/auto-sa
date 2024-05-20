@@ -1,0 +1,42 @@
+tools: sys.getenv, get_inst_ip, run_inst_cmd, check_port
+You have just received an alarm. The information about the alarm is contained in the following env vars:
+ALARM_NAME
+INSTANCEID
+
+1. Retrieve the ip of the instance using the id stored in the INSTANCEID env var. Use the getinstip tool providing it the instanceid as an argument.
+2. Determine which IP to ssh to by checking connecivity
+3. SSH into the instance using the ip and determine the cause of the ALARM_NAME.
+4. Try up to 5 diagnostic commands (use sudo)
+5. Attempt to resolve the issue
+6. Output the diagnosis if any and steps taken to resolve.
+
+---
+name: get_inst_ip
+tools: sys.exec
+description: get an instance ip given an id
+args: input: the instance id to lookup
+
+Output both the public and private ip
+
+#!aws ec2 describe-instances --instance-ids "${input}" --query "Reservations[].Instances[].PublicIpAddress" --output json
+
+---
+name: run_inst_cmd
+tools: sys.exec
+description: run a command on a remote instance
+args: ip: the instance id to lookup
+args: command: the command to run
+
+#!/bin/bash
+ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts
+ssh -i ~/.ssh/id_rsa ec2-user@${ip} "${command}" || echo "Command failed"
+
+---
+name: check_port
+tools: sys.exec
+args: host: the host to check for connectivity
+args: port: the port to check for connectivity
+
+#!/bin/bash
+
+timeout 1 bash -c "</dev/tcp/${host}/${port}" && echo "Port ${port} is open on ${host}" || echo "Port ${port} is closed on ${host}"

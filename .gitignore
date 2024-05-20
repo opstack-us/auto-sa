@@ -1,0 +1,29 @@
+# Ignore environment variable files
+.env
+
+# Ignore SSH known hosts file
+.ssh/known_hosts
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.bak
+*.old
+
+# Ignore node_modules if using Node.js
+node_modules/
+
+# Ignore virtual environment directories
+venv/
+env/
